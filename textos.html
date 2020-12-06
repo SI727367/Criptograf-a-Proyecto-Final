@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+
+<form action="/subida" method="post" enctype="multipart/form-data">
+    <label><b>subida de documentos</b></label>
+    <input type="file" name="archivo" />
+    <button type="submit">enviar</button>
+</form>
+
+<form action="/mostrarenviados" method="post" enctype="multipart/form-data">
+    <button type="submit">ver carpeta enviados</button>
+</form>
+
+<form action="/hacerfirma" method="post" enctype="multipart/form-data">
+    <button type="submit">firmar</button>
+</form>
+
+<form action="/verificarfirma" method="post" enctype="multipart/form-data">
+    <button type="submit">verificar</button>
+</form>
+
+<form action="/mostrarfirmas" method="post" enctype="multipart/form-data">
+    <button type="submit">ver carpeta de firmas</button>
+</form>
+
+<form action="/mostrardesfirmados" method="post" enctype="multipart/form-data">
+    <button type="submit">ver carpeta de desfirmados</button>
+</form>
+
+<form action="/cifrar" method="post" enctype="multipart/form-data">
+    <button type="submit">cifrar</button>
+</form>
+
+<form action="/decifrar" method="post" enctype="multipart/form-data">
+    <button type="submit">decifrar</button>
+</form>
+
+<form action="/vercifrados" method="post" enctype="multipart/form-data">
+    <button type="submit">ver carpeta encriptados</button>
+</form>
+
+<form action="/verdecifrados" method="post" enctype="multipart/form-data">
+    <button type="submit">ver carpeta desencriptados</button>
+</form>
+
+</body>
+</html>
