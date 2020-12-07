@@ -30,7 +30,9 @@ app.post('/subida', upload.single('archivo'), (req, res) =>
 
 app.post('/mostrarenviados', (root,res)=>{
   fs.readdir('subidos', (err, files) => {
-      res.send(files);
+    alert(files);  
+    res.send();
+      
 });
 });
 
