@@ -1,21 +1,18 @@
+const JsonDB = require('node-json-db').JsonDB;
+const Config = require('node-json-db/dist/lib/JsonDBConfig').Config;
+const Cryptr = require('cryptr');
+
 const express = require("express");
 const multer = require('multer');
 const bodyParser = require('body-parser');
-const JsonDB = require('node-json-db').JsonDB;
-const Config = require('node-json-db/dist/lib/JsonDBConfig').Config;
 const uuid = require("uuid");
 const speakeasy = require("speakeasy");
 const crypto = require("crypto")
 const fs     = require('fs');
-const Cryptr = require('cryptr');
-const argon2 = require('argon2');
-const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-  modulusLength: 2048
-});
+
 const upload = multer({dest: './subidos'});
 const app = express();
 var alert = require('alert');
-
 var db = new JsonDB(new Config("basededaros", true, false, '/'));
 
 app.use(bodyParser.json());
@@ -37,6 +34,10 @@ app.post('/mostrarenviados', (root,res)=>{
 });
 });
 
+const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+  modulusLength: 2048
+});
+
 app.post("/registro", async(req, res) => {
   const id = uuid.v4();
     const path = `/user/${id}`;
@@ -47,26 +48,17 @@ app.post("/registro", async(req, res) => {
 
 app.post("/sesion", (req,res) => {
   const { userId, token } = req.body;
-  try {
     const path = `/user/${userId}`;
     const user = db.getData(path);
     console.log({ user })
     const { base32: secret } = user.temp_secret;
-    const verified = speakeasy.totp.verify({
-      secret,
-      encoding: 'base32',
-      token
-    });
+    const verified = speakeasy.totp.verify({secret, encoding: 'base32',token});
     if (verified) {
       db.push(path, { id: userId, secret: user.temp_secret });
       res.sendFile('textos.html', {root: __dirname});
     } else {
       res.json({ verified: false})
     }
-  } catch(error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error retrieving user'})
-  };
 });
 
 app.post('/hacerfirma', (req, res)=>{
@@ -76,9 +68,7 @@ app.post('/hacerfirma', (req, res)=>{
     padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
   })
     fs.writeFile('./firmados/secreto.txt', signature, 'ascii', function(err) { 
-      if (err) {
-        console.log(err);
-      } else {
+      if (err != true) {
         alert('firmado');
         res.send();
       }
@@ -91,9 +81,7 @@ const signature = crypto.sign("sha256", Buffer.from(verifiableData), {
 	key: privateKey,
 	padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
 })
-const isVerified = crypto.verify(
-	"sha256",
-	Buffer.from(verifiableData),
+const isVerified = crypto.verify("sha256",Buffer.from(verifiableData),
 	{
 		key: publicKey,
 		padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
@@ -101,9 +89,7 @@ const isVerified = crypto.verify(
 	signature
 )
 fs.writeFile('./desfirmados/desfirmado.txt', signature, 'ascii', function(err) { 
-  if (err) {
-    console.log(err);
-  } else {
+  if (err != true) {
     alert('verificado');
     res.send();
   }
@@ -115,9 +101,7 @@ app.post('/cifrar', (req, res)=>{
   const encryptedString = cryptr.encrypt('./subidos/secretioso.txt');
   const decryptedString = cryptr.decrypt(encryptedString);
   fs.writeFile('./cifrados/protegido.txt', encryptedString, 'ascii', function(err) { 
-    if (err) {
-      console.log(err);
-    } else {
+    if (err != true) {
       alert('encriptado');
       res.send();
     }
@@ -130,9 +114,7 @@ app.post('/decifrar', (req,res)=>{
   const encryptedString = cryptr.encrypt('./subidos/secretioso.txt'); 
   const decryptedString = cryptr.decrypt(encryptedString); 
   fs.writeFile('./decifrados/decifrado.txt', decryptedString, 'ascii', function(err) { 
-    if (err) {
-      console.log(err);
-    } else {
+    if (err != true) {
       alert('decifrado');
       res.send();
     }
@@ -142,13 +124,12 @@ app.post('/decifrar', (req,res)=>{
   });
 
 app.post('/mostrarfirmas', (root,res)=>{
-  fs.readdir('firmados', (err, files) => {
-  res.send(files);
+  fs.readdir('firmados', (err, files) => {res.send(files);
 });
 });
 
 app.post('/mostrardesfirmados', (root,res)=>{
-  fs.readdir('desfirmados', (err, files) => {
+fs.readdir('desfirmados', (err, files) => {
   res.send(files);
 });
 });
